@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const categoryFilters = document.querySelectorAll(".category-filter");
   const dayFilters = document.querySelectorAll(".day-filter");
   const timeFilters = document.querySelectorAll(".time-filter");
+  const difficultyFilters = document.querySelectorAll(".difficulty-filter");
 
   // Authentication elements
   const loginButton = document.getElementById("login-button");
@@ -40,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let searchQuery = "";
   let currentDay = "";
   let currentTimeRange = "";
+  let currentDifficulty = null; // null means no difficulty filter active
 
   // Authentication state
   let currentUser = null;
@@ -64,6 +66,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (activeTimeFilter) {
       currentTimeRange = activeTimeFilter.dataset.time;
     }
+
+    // Initialize difficulty filter - no default active filter
+    // Difficulty filter is optional, so start with null (show all activities)
   }
 
   // Function to set day filter
@@ -393,6 +398,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
+      // Note: Difficulty filtering is handled on the client side
+
       const queryString =
         queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
       const response = await fetch(`/activities${queryString}`);
@@ -424,6 +431,21 @@ document.addEventListener("DOMContentLoaded", () => {
       // Apply category filter
       if (currentFilter !== "all" && activityType !== currentFilter) {
         return;
+      }
+
+      // Apply difficulty filter
+      if (currentDifficulty !== null) {
+        if (currentDifficulty === "all") {
+          // "All Levels" means show only activities with no difficulty specified
+          if (details.difficulty) {
+            return;
+          }
+        } else {
+          // Show only activities matching the specific difficulty level
+          if (details.difficulty !== currentDifficulty) {
+            return;
+          }
+        }
       }
 
       // Apply weekend filter if selected
@@ -507,6 +529,22 @@ document.addEventListener("DOMContentLoaded", () => {
       </span>
     `;
 
+    // Create difficulty badge (only if difficulty is specified and valid)
+    const allowedDifficulties = ['Beginner', 'Intermediate', 'Advanced'];
+    const difficultyBadgeHtml = details.difficulty && allowedDifficulties.includes(details.difficulty) ? `
+      <span class="difficulty-badge" data-difficulty="${details.difficulty}">
+        ${details.difficulty}
+      </span>
+    ` : '';
+
+    // Combine tags - only wrap in container if we have tags to show
+    const tagsHtml = `
+      <div class="activity-tags">
+        ${tagHtml}
+        ${difficultyBadgeHtml}
+      </div>
+    `;
+
     // Create capacity indicator
     const capacityIndicator = `
       <div class="capacity-container ${capacityStatusClass}">
@@ -544,7 +582,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     activityCard.innerHTML = `
-      ${tagHtml}
+      ${tagsHtml}
       <h4>${name}</h4>
       <p>${details.description}</p>
       <p class="tooltip">
@@ -669,6 +707,27 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update current time filter and fetch activities
       currentTimeRange = button.dataset.time;
       fetchActivities();
+    });
+  });
+
+  // Add event listeners for difficulty filter buttons
+  difficultyFilters.forEach((button) => {
+    button.addEventListener("click", () => {
+      const clickedDifficulty = button.dataset.difficulty;
+      
+      // Toggle filter: if already active, deactivate it; otherwise activate it
+      if (currentDifficulty === clickedDifficulty) {
+        // Deactivate the current filter - show all activities
+        currentDifficulty = null;
+        button.classList.remove("active");
+      } else {
+        // Activate the new filter
+        difficultyFilters.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+        currentDifficulty = clickedDifficulty;
+      }
+
+      displayFilteredActivities();
     });
   });
 
