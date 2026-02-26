@@ -524,20 +524,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const shareButtons = `
       <div class="share-buttons">
         <span class="share-label">Share:</span>
-        <button class="share-btn share-facebook tooltip" data-activity="${name}" data-platform="facebook" title="Share on Facebook">
-          <span class="share-icon">📘</span>
+        <button class="share-btn share-facebook tooltip" data-activity="${name}" data-platform="facebook" title="Share on Facebook" aria-label="Share on Facebook">
+          <span class="share-icon" aria-hidden="true">📘</span>
           <span class="tooltip-text">Share on Facebook</span>
         </button>
-        <button class="share-btn share-twitter tooltip" data-activity="${name}" data-platform="twitter" title="Share on Twitter">
-          <span class="share-icon">🐦</span>
+        <button class="share-btn share-twitter tooltip" data-activity="${name}" data-platform="twitter" title="Share on Twitter" aria-label="Share on Twitter">
+          <span class="share-icon" aria-hidden="true">🐦</span>
           <span class="tooltip-text">Share on Twitter</span>
         </button>
-        <button class="share-btn share-email tooltip" data-activity="${name}" data-platform="email" title="Share via Email">
-          <span class="share-icon">✉️</span>
+        <button class="share-btn share-email tooltip" data-activity="${name}" data-platform="email" title="Share via Email" aria-label="Share via Email">
+          <span class="share-icon" aria-hidden="true">✉️</span>
           <span class="tooltip-text">Share via Email</span>
         </button>
-        <button class="share-btn share-copy tooltip" data-activity="${name}" data-platform="copy" title="Copy link">
-          <span class="share-icon">🔗</span>
+        <button class="share-btn share-copy tooltip" data-activity="${name}" data-platform="copy" title="Copy link" aria-label="Copy link to clipboard">
+          <span class="share-icon" aria-hidden="true">🔗</span>
           <span class="tooltip-text">Copy link</span>
         </button>
       </div>
