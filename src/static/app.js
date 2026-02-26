@@ -521,10 +521,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     // Create share buttons
-    const shareUrl = encodeURIComponent(window.location.href);
-    const shareTitle = encodeURIComponent(`Join ${name} at Mergington High School!`);
-    const shareText = encodeURIComponent(`Check out this activity: ${name} - ${details.description}`);
-    
     const shareButtons = `
       <div class="share-buttons">
         <span class="share-label">Share:</span>
@@ -787,6 +783,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Fallback function for copying text to clipboard
+  function copyTextFallback(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        showMessage("Link copied to clipboard!", "success");
+      } else {
+        showMessage("Failed to copy link", "error");
+      }
+    } catch (err) {
+      console.error("Fallback: Failed to copy", err);
+      showMessage("Failed to copy link", "error");
+    }
+    
+    document.body.removeChild(textArea);
+  }
+
   // Handle social sharing
   function handleShare(event) {
     const activityName = event.currentTarget.dataset.activity;
@@ -824,12 +845,19 @@ document.addEventListener("DOMContentLoaded", () => {
         
       case 'copy':
         // Copy link to clipboard
-        navigator.clipboard.writeText(shareUrl).then(() => {
-          showMessage("Link copied to clipboard!", "success");
-        }).catch((err) => {
-          console.error("Failed to copy link:", err);
-          showMessage("Failed to copy link", "error");
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          // Modern clipboard API
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            showMessage("Link copied to clipboard!", "success");
+          }).catch((err) => {
+            console.error("Failed to copy link:", err);
+            // Fallback method
+            copyTextFallback(shareUrl);
+          });
+        } else {
+          // Fallback for browsers without clipboard API
+          copyTextFallback(shareUrl);
+        }
         break;
         
       default:
