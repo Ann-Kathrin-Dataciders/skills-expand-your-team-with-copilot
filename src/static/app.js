@@ -677,12 +677,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // Add event listeners for difficulty filter buttons
   difficultyFilters.forEach((button) => {
     button.addEventListener("click", () => {
-      // Update active class
-      difficultyFilters.forEach((btn) => btn.classList.remove("active"));
-      button.classList.add("active");
+      const clickedDifficulty = button.dataset.difficulty;
+      
+      // Toggle filter: if already active, deactivate it; otherwise activate it
+      if (currentDifficulty === clickedDifficulty) {
+        // Deactivate the current filter - show all activities
+        currentDifficulty = null;
+        button.classList.remove("active");
+      } else {
+        // Activate the new filter
+        difficultyFilters.forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+        currentDifficulty = clickedDifficulty;
+      }
 
-      // Update current difficulty filter and display filtered activities
-      currentDifficulty = button.dataset.difficulty;
       displayFilteredActivities();
     });
   });
