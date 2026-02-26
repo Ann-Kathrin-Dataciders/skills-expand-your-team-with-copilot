@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let searchQuery = "";
   let currentDay = "";
   let currentTimeRange = "";
-  let currentDifficulty = "";
+  let currentDifficulty = null; // null means no difficulty filter active
 
   // Authentication state
   let currentUser = null;
@@ -67,11 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
       currentTimeRange = activeTimeFilter.dataset.time;
     }
 
-    // Initialize difficulty filter
-    const activeDifficultyFilter = document.querySelector(".difficulty-filter.active");
-    if (activeDifficultyFilter) {
-      currentDifficulty = activeDifficultyFilter.dataset.difficulty;
-    }
+    // Initialize difficulty filter - no default active filter
+    // Difficulty filter is optional, so start with null (show all activities)
   }
 
   // Function to set day filter
@@ -437,7 +434,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Apply difficulty filter
-      if (currentDifficulty) {
+      if (currentDifficulty !== null) {
         if (currentDifficulty === "all") {
           // "All Levels" means show only activities with no difficulty specified
           if (details.difficulty) {
