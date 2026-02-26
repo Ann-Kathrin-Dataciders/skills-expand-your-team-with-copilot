@@ -529,12 +529,21 @@ document.addEventListener("DOMContentLoaded", () => {
       </span>
     `;
 
-    // Create difficulty badge (only if difficulty is specified)
-    const difficultyBadgeHtml = details.difficulty ? `
+    // Create difficulty badge (only if difficulty is specified and valid)
+    const allowedDifficulties = ['Beginner', 'Intermediate', 'Advanced'];
+    const difficultyBadgeHtml = details.difficulty && allowedDifficulties.includes(details.difficulty) ? `
       <span class="difficulty-badge" data-difficulty="${details.difficulty}">
         ${details.difficulty}
       </span>
     ` : '';
+
+    // Combine tags - only wrap in container if we have tags to show
+    const tagsHtml = `
+      <div class="activity-tags">
+        ${tagHtml}
+        ${difficultyBadgeHtml}
+      </div>
+    `;
 
     // Create capacity indicator
     const capacityIndicator = `
@@ -550,10 +559,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     activityCard.innerHTML = `
-      <div class="activity-tags">
-        ${tagHtml}
-        ${difficultyBadgeHtml}
-      </div>
+      ${tagsHtml}
       <h4>${name}</h4>
       <p>${details.description}</p>
       <p class="tooltip">
